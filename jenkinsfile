@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "cab-booking-ui"
+        CONTAINER_NAME = "cab-ui"
+    }
+
+    stages {
+        stage('Clone Source Code') {
+            steps {
+                git url: 'https://github.com/yourusername/your-repo.git', branch: 'main'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME} ."
+            }
+        }
+
+        stage('Stop Old Container') {
+            steps {
+                sh """
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                """
+            }
+        }
+
+        stage('Run New Container') {
+            steps {
+                sh "docker run -d --name ${CONTAINER_NAME} -p 80:8080 ${IMAGE_NAME}"
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "App successfully deployed on http://${env.BUILD_HOST ?: '3.89.102.197'}"
+        }
+        failure {
+            echo "Deployment failed."
+        }
+    }
+}
