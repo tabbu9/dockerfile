@@ -5,7 +5,7 @@ FROM tomcat:10.1-jdk17
 COPY index.html /usr/local/tomcat/webapps/ROOT/index.html
 
 # Expose default Tomcat port
-EXPOSE 80
+EXPOSE 8080
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
